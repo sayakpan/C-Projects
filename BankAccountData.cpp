@@ -222,12 +222,9 @@ void remove(account acc)
         printf("Cannot Open File");
         exit(1);
     }
-    FILE *ftemp;
-    ftemp = fopen("temp.txt", "wb+");
 
     char search[20];
-    char ch;
-    int flag = 0;
+    int ch, flag = 0;
     printf("\nEnter Account Number to REMOVE Account : ");
     fflush(stdin);
     gets(search);
@@ -240,7 +237,6 @@ void remove(account acc)
             printf("\nAccount Number : %s", acc.accountNumber);
             printf("\nAccount Balance : %.2f\n", acc.balance);
             flag = 1;
-            break;
         }
     }
     rewind(fp);
@@ -250,6 +246,8 @@ void remove(account acc)
         scanf("%d", &ch);
         if (ch == 1)
         {
+            FILE *ftemp;
+            ftemp = fopen("temp.txt", "wb+");
             while (fread(&acc, sizeof(acc), 1, fp) == 1)
             {
                 if (strcmp(search, acc.accountNumber) != 0)
@@ -257,19 +255,8 @@ void remove(account acc)
                     fwrite(&acc, sizeof(acc), 1, ftemp);
                 }
             }
-
             fclose(fp);
             fclose(ftemp);
-
-            // fp = fopen("bank.txt", "wb");
-            // ftemp = fopen("temp.txt", "rb");
-            // while (fread(&acc, sizeof(acc), 1, ftemp) == 1)
-            // {
-            //     fwrite(&acc, sizeof(acc), 1, fp);
-            // }
-            // fclose(fp);
-            // fclose(ftemp);
-
             remove("bank.txt");
             rename("temp.txt", "bank.txt");
             printf("\nAccount Deleted");
@@ -279,6 +266,4 @@ void remove(account acc)
     }
     else
         printf("\nAccount Does Not Exists !!");
-    fclose(fp);
-    fclose(ftemp);
 }
