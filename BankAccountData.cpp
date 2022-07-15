@@ -40,7 +40,7 @@ int main()
             operation(acc);
             break;
         case 5:
-            operation(acc);
+            remove(acc);
             break;
         case 6:
             reset(acc);
@@ -52,7 +52,7 @@ int main()
 void add(account acc)
 {
     FILE *fp;
-    fp = fopen("bank.txt", "a");
+    fp = fopen("bank.txt", "ab");
     if (fp == NULL)
     {
         printf("Cannot Open File");
@@ -86,11 +86,10 @@ void add(account acc)
 void display(account acc)
 {
     FILE *fp;
-    fp = fopen("bank.txt", "r");
+    fp = fopen("bank.txt", "rb");
     if (fp == NULL)
     {
-        printf("Cannot Open File");
-        exit(1);
+        fp = fopen("bank.txt", "w");
     }
     long int check, check1; /*Checking if file is Empty*/
     fseek(fp, 0, SEEK_END);
@@ -109,7 +108,7 @@ void display(account acc)
             printf("\nAccount Holder Name : %s", acc.name);
             printf("\nAccount Number : %s", acc.accountNumber);
             printf("\nAccount Balance : %.2f\n", acc.balance);
-        };
+        }
         fclose(fp);
     }
 }
@@ -117,7 +116,7 @@ void display(account acc)
 void search(account acc)
 {
     FILE *fp;
-    fp = fopen("bank.txt", "r");
+    fp = fopen("bank.txt", "rb");
     if (fp == NULL)
     {
         printf("Cannot Open File");
@@ -148,7 +147,7 @@ void search(account acc)
 void operation(account acc)
 {
     FILE *fp;
-    fp = fopen("bank.txt", "r+");
+    fp = fopen("bank.txt", "rb+");
     if (fp == NULL)
     {
         printf("Cannot Open File");
@@ -204,7 +203,7 @@ void operation(account acc)
 void reset(account acc)
 {
     FILE *fp;
-    fp = fopen("bank.txt", "w");
+    fp = fopen("bank.txt", "wb");
     if (fp == NULL)
     {
         printf("Cannot Open File");
@@ -212,4 +211,74 @@ void reset(account acc)
     }
     printf("\n<-- RESET DONE -->");
     fclose(fp);
+}
+
+void remove(account acc)
+{
+    FILE *fp;
+    fp = fopen("bank.txt", "rb+");
+    if (fp == NULL)
+    {
+        printf("Cannot Open File");
+        exit(1);
+    }
+    FILE *ftemp;
+    ftemp = fopen("temp.txt", "wb+");
+
+    char search[20];
+    char ch;
+    int flag = 0;
+    printf("\nEnter Account Number to REMOVE Account : ");
+    fflush(stdin);
+    gets(search);
+    while (fread(&acc, sizeof(acc), 1, fp) == 1)
+    {
+        if (strcmp(search, acc.accountNumber) == 0)
+        {
+            printf("\n--- Delete ? ---\n");
+            printf("\nAccount Holder Name : %s", acc.name);
+            printf("\nAccount Number : %s", acc.accountNumber);
+            printf("\nAccount Balance : %.2f\n", acc.balance);
+            flag = 1;
+            break;
+        }
+    }
+    rewind(fp);
+    if (flag == 1)
+    {
+        printf("\nAre You Sure ?\n[Press '1' to Confirm]\n[Press '0' to Exit]\n>>> ");
+        scanf("%d", &ch);
+        if (ch == 1)
+        {
+            while (fread(&acc, sizeof(acc), 1, fp) == 1)
+            {
+                if (strcmp(search, acc.accountNumber) != 0)
+                {
+                    fwrite(&acc, sizeof(acc), 1, ftemp);
+                }
+            }
+
+            fclose(fp);
+            fclose(ftemp);
+
+            // fp = fopen("bank.txt", "wb");
+            // ftemp = fopen("temp.txt", "rb");
+            // while (fread(&acc, sizeof(acc), 1, ftemp) == 1)
+            // {
+            //     fwrite(&acc, sizeof(acc), 1, fp);
+            // }
+            // fclose(fp);
+            // fclose(ftemp);
+
+            remove("bank.txt");
+            rename("temp.txt", "bank.txt");
+            printf("\nAccount Deleted");
+        }
+        else
+            printf("\nDeletion Terminated By USER!!");
+    }
+    else
+        printf("\nAccount Does Not Exists !!");
+    fclose(fp);
+    fclose(ftemp);
 }
