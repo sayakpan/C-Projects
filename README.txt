@@ -1,3 +1,5 @@
 # C-Projects
 
-Personal Practice Projects for C and C++
+Hi, This is Sayak.
+
+It is a Personal Practice Projects for C and C++
